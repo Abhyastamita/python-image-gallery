@@ -1,60 +1,8 @@
 import psycopg2
+from db import *
 
-db_host = "image-database.cbpimzarujc3.us-east-1.rds.amazonaws.com"
-db_name = "image_gallery"
-db_user = "image_gallery"
 
-password_file = "/home/ec2-user/.image_gallery_config"
 
-def get_password():
-    f = open(password_file, "r")
-    result = f.readline()
-    f.close()
-    return result[:-1]
-
-def connect():
-    global connection
-    connection = psycopg2.connect(host=db_host, dbname=db_name, user=db_user, password=get_password())
-
-def execute(query,args=None):
-    global connection
-    cursor = connection.cursor()
-    if not args:
-        cursor.execute(query)
-    else:
-        cursor.execute(query, args)
-    return cursor
-
-# Database functions:
-
-def list_users():
-    res = execute('select * from users;')
-    return res
-
-def add_user(username,password,full_name):
-    res = execute("insert into users values (%s, %s, %s);",(username,password,full_name))
-    connection.commit()
-    return
-
-def user_exists(username):
-    res = execute("select username from users where username = %s;",(username,))
-    if res.rowcount > 0:
-        return True
-    else:
-        return False
-
-def edit_user(username,password=None,full_name=None):
-    if password:
-        res = execute("update users set password = %s where username = %s;",(password,username))
-    if full_name:
-        res = execute("update users set full_name = %s where username = %s;",(full_name,username))
-    connection.commit()
-    return
-
-def delete_user(username):
-    res = execute("delete from users where username = %s;",(username,))
-    connection.commit()
-    return
 
 # Command line interface functions:
 

@@ -1,20 +1,29 @@
 import psycopg2
+from secrets import get_secret_image_gallery
+import json
 
-db_host = "image-database.cbpimzarujc3.us-east-1.rds.amazonaws.com"
-db_name = "image_gallery"
-db_user = "image_gallery"
+dbname = 'image_gallery'
 
-password_file = "/home/ec2-user/.image_gallery_config"
+def get_secret():
+    jsonString = get_secret_image_gallery()
+    return json.loads(jsonString)
 
-def get_password():
-    f = open(password_file, "r")
-    result = f.readline()
-    f.close()
-    return result[:-1]
+def get_password(secret):
+    return secret['password']
+
+def get_host(secret):
+    return secret['host']
+
+def get_username(secret):
+    return secret['username']
+
+def get_db_name(secret):
+    return secret['dbInstanceIdentifier']
 
 def connect():
     global connection
-    connection = psycopg2.connect(host=db_host, dbname=db_name, user=db_user, password=get_password())
+    secret = get_secret()
+    connection = psycopg2.connect(host=get_host(secret), dbname=dbname, user=get_username(secret), password=get_password(secret))
 
 def execute(query,args=None):
     global connection
@@ -25,12 +34,39 @@ def execute(query,args=None):
         cursor.execute(query, args)
     return cursor
 
+# User functions:
+
+def list_users():
+    res = execute('select * from users;')
+    return res
+
+def add_user(username,password,full_name):
+    res = execute("insert into users values (%s, %s, %s);",(username,password,full_name))
+    connection.commit()
+    return
+
+def user_exists(username):
+    res = execute("select username from users where username = %s;",(username,))
+    if res.rowcount > 0:
+        return True
+    else:
+        return False
+
+def edit_user(username,password=None,full_name=None):
+    if password:
+        res = execute("update users set password = %s where username = %s;",(password,username))
+    if full_name:
+        res = execute("update users set full_name = %s where username = %s;",(full_name,username))
+    connection.commit()
+    return
+
+def delete_user(username):
+    res = execute("delete from users where username = %s;",(username,))
+    connection.commit()
+    return
+
 def main():
     connect()
-    res = execute('select * from users')
-    for row in res:
-        print(row)
-    res = execute("update users set password=%s where username='fred'", ('banana',))
     res = execute('select * from users')
     for row in res:
         print(row)
