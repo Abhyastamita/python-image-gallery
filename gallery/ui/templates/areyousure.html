@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Delete User</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <h1>Delete User</h1>
+        <hr>
+        <p>Are you sure?</p>
+        <hr>
+        <br />
+        <a href="/admin/deleted/{{ username }}" class="button">Delete {{ username }}</a>
+        <a href="/admin" class="button">No, return to menu</a>
+        <style>
+            .button {
+                padding: 5px;
+                border: 1px solid black;
+                border-radius: 15px; 
+                margin: 10px;
+                color: black;
+                text-decoration: none;
+            }
+            .button:hover {
+                background-color: #ebebeb;
+            }
+            li {
+                margin-bottom: 15px;
+            }
+        </style>
+    </body>
+</html>

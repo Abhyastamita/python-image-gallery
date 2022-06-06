@@ -1,5 +1,5 @@
 import psycopg2
-from secrets import get_secret_image_gallery
+from ig_secrets import get_secret_image_gallery
 import json
 
 dbname = 'image_gallery'
@@ -41,9 +41,11 @@ def list_users():
     return res
 
 def add_user(username,password,full_name):
+    if user_exists(username):
+        return False
     res = execute("insert into users values (%s, %s, %s);",(username,password,full_name))
     connection.commit()
-    return
+    return True
 
 def user_exists(username):
     res = execute("select username from users where username = %s;",(username,))
@@ -52,13 +54,19 @@ def user_exists(username):
     else:
         return False
 
+def get_user(username):
+    res = execute("select * from users where username = %s;",(username,))
+    return res.fetchone()
+
 def edit_user(username,password=None,full_name=None):
+    if not user_exists(username):
+        return False
     if password:
         res = execute("update users set password = %s where username = %s;",(password,username))
     if full_name:
         res = execute("update users set full_name = %s where username = %s;",(full_name,username))
     connection.commit()
-    return
+    return True
 
 def delete_user(username):
     res = execute("delete from users where username = %s;",(username,))
