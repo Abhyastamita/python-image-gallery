@@ -1,0 +1,11 @@
+---
+plugin: aws_ec2
+regions:
+  - us-east-1
+keyed_groups:
+  - key: tags.Name
+    prefix: tag_Name_
+    separator: ""
+  - key: tags.Module
+    prefix: tag_Module_
+    separator: ""

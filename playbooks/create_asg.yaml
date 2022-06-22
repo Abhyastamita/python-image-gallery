@@ -1,0 +1,48 @@
+---
+  - hosts: localhost
+    gather_facts: no
+    module_defaults:
+      group/aws:
+        region: us-east-1
+    tasks:
+      - name: Get user data file
+        set_fact:
+          user_data_file: "{{ lookup('file', 'scripts/startup.sh') }}"
+      - name: Create a launch template for image gallery
+        community.aws.ec2_launch_template:
+          name: "module5-image-gallery"
+          image_id: "ami-0022f774911c1d690"
+          key_name: aws-key-1
+          instance_type: t2.micro
+          iam_instance_profile: image-gallery-server-role
+          user_data: "{{ user_data_file | b64encode }}"
+          # security_group_ids:
+          #   - "{{ postgres_tag_sg.group_id }}"
+          #   - "{{ developer_sg.group_id }}"
+          #   - "{{ nginx_sg.group_id }}"
+          network_interfaces:
+            - associate_public_ip_address: yes
+              delete_on_termination: yes
+              device_index: 0
+              groups:
+                - "{{ postgres_tag_sg.group_id }}"
+                - "{{ developer_sg.group_id }}"
+                - "{{ nginx_sg.group_id }}"
+          tags:
+            Name: Module5 launch template
+            Module: 5
+        register: launch_template
+      - name: Create auto scaling group
+        community.aws.ec2_asg:
+          name: "module5-image-gallery-asg"
+          availability_zones: [ 'us-east-1a' ]
+          launch_template:
+              launch_template_name: 'module5-image-gallery'
+          target_group_arns: "{{ tg.target_group_arn }}"
+          min_size: 2
+          max_size: 4
+          desired_capacity: 2
+          vpc_zone_identifier: [ "{{ public_subnet.subnet.id }}" ]
+          tags:
+             - Module: 5
+             - Name: Module5 asg

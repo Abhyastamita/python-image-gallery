@@ -1,0 +1,50 @@
+---
+  - hosts: localhost
+    gather_facts: no
+    module_defaults:
+      group/aws:
+        region: us-east-1
+    tasks:
+      - name: Create target group
+        community.aws.elb_target_group:
+          name: Module5-elb-tg
+          protocol: TCP
+          port: 80
+          vpc_id: "{{ vpc.vpc.id }}"
+          # health_check_protocol: http
+          # health_check_path: /
+          # health_check_port: 80
+          # successful_response_codes: 200
+          # health_check_interval: 30
+          # health_check_timeout: 10
+          # healthy_threshold_count: 3
+          # unhealthy_threshold_count: 3
+          tags:
+            Name: "Module 5 Target Group"
+          state: present
+        register: tg
+      - name: Create load balancer
+        community.aws.elb_network_lb:
+          name: Module5-elb
+          subnet_mappings:
+            - SubnetId: "{{ public_subnet.subnet.id }}"
+              AllocationId: eipalloc-098cfcf4036916d1f
+          listeners:
+            - Protocol: TCP
+              Port: 80
+              DefaultActions:
+                - Type: forward
+                  TargetGroupName: Module5-elb-tg
+            - Protocol: TLS
+              Port: 443
+              DefaultActions:
+                - Type: forward
+                  TargetGroupName: Module5-elb-tg
+              Certificates:
+                - CertificateArn: arn:aws:acm:us-east-1:809633937946:certificate/b6a2384b-8a5c-4d66-9301-e79a774e27d6
+          state: present
+        register: lb
+      - name: debug
+        debug: var=tg
+      - name: debug
+        debug: var=lb
