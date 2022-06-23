@@ -1,5 +1,5 @@
 import psycopg2
-from ig_secrets import get_secret_image_gallery, get_secret_host
+from gallery.tools.ig_secrets import get_secret_image_gallery, get_secret_host
 import json
 
 dbname = 'image_gallery'
@@ -26,7 +26,7 @@ def get_db_name(secret):
 def connect():
     global connection
     secret = get_secret()
-    connection = psycopg2.connect(host=get_host(secret), dbname=dbname, user=get_username(secret), password=get_password(secret))
+    connection = psycopg2.connect(host=get_host(), dbname=dbname, user=get_username(secret), password=get_password(secret))
 
 def execute(query,args=None):
     global connection

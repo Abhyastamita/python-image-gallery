@@ -1,10 +1,8 @@
 from flask import Flask
-import sys
 from flask import render_template
 from flask import request
 
-sys.path.insert(0, '/home/ec2-user/python-image-gallery/gallery/tools/')
-from db import *
+from gallery.tools.db import *
 
 app = Flask(__name__)
 
