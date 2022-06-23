@@ -26,7 +26,7 @@ def get_db_name(secret):
 def connect():
     global connection
     secret = get_secret()
-    connection = psycopg2.connect(host=get_host(secret), dbname=dbname, user=get_username(secret), password=get_password(secret))
+    connection = psycopg2.connect(host=get_host(), dbname=dbname, user=get_username(secret), password=get_password(secret))
 
 def execute(query,args=None):
     global connection
