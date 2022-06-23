@@ -8,9 +8,10 @@ from flask import flash
 from gallery.data.user import User
 from gallery.data.postgres_user_dao import PostgresUserDAO
 from gallery.data.db import connect
+from gallery.tools.ig_secrets import get_session_secret
 
 app = Flask(__name__)
-app.secret_key = b"replaceMe"
+app.secret_key = get_session_secret()
 
 def user_dao():
     return PostgresUserDAO()
