@@ -1,5 +1,5 @@
 import psycopg2
-from ig_secrets import get_secret_image_gallery
+from ig_secrets import get_secret_image_gallery get_secret_host
 import json
 
 dbname = 'image_gallery'

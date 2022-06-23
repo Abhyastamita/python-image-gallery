@@ -1,0 +1,23 @@
+---
+  - hosts: all[0]
+    gather_facts: no
+    module_defaults:
+      group/aws:
+        region: us-east-1
+    vars:
+      pg_password: "{{ lookup('amazon.aws.aws_secret', 'image_gallery_db_root_password.password', nested=true) }}"
+      ig_password: "{{ lookup('amazon.aws.aws_secret', 'image_gallery_password.password', nested=true) }}"
+      db_host: "{{ lookup('amazon.aws.aws_secret', 'm5host') }}"
+      port: 5432
+      db_user: image_gallery
+    tasks:
+      - name: Set up database
+        become: yes
+        shell: |
+          psql --host={{ db_host}} --port={{ port}} --username=postgres --password
+          {{ pg_password }}
+          create database image_gallery;
+          create user image_gallery with password '{{ ig_password }}';
+          grant all privileges on database image_gallery to image_gallery;
+          \q
+

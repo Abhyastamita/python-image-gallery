@@ -45,4 +45,4 @@
           vpc_zone_identifier: [ "{{ public_subnet.subnet.id }}" ]
           tags:
              - Module: 5
-             - Name: Module5 asg
+             - Name: module5nginx

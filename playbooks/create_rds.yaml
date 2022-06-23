@@ -22,7 +22,7 @@
     - name: Create Postgres database
       community.aws.rds_instance:
         engine: postgres
-        db_instance_identifier: module-5-ig-postgres
+        db_instance_identifier: module-5-ig-pg
         instance_type: db.t3.micro
         password: "{{ database_aws_secret }}"
         username: postgres
@@ -31,7 +31,11 @@
           - "{{ postgres_sg.group_id }}"
         db_subnet_group_name: module5-private-group
         availability_zone: us-east-1a
-        allocated_storage: 15
+        allocated_storage: 20
+        creation_source: snapshot
+        snapshot_identifier: arn:aws:rds:us-east-1:809633937946:snapshot:ig-starter-db-1
+        db_snapshot_identifier: arn:aws:rds:us-east-1:809633937946:snapshot:ig-starter-db-1
+        apply_immediately: yes
         state: present
       register: pgdb
     - name: debug
