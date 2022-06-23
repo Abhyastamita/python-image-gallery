@@ -10,7 +10,7 @@
         <h2>Users</h2>
         <ul id="users">
             {% for user in users %}
-                <li><a href="admin/modify/{{ user[0] }}">{{ user[2] }}</a> <a class="button" href="admin/delete/{{ user[0] }}">Delete</a></li>
+                <li><a href="admin/modify/{{ user.username }}">{{ user.full_name }}</a> <a class="button" href="admin/delete/{{ user.username }}">Delete</a></li>
             {% endfor %}
         </ul>
         <hr>

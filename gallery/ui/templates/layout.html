@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Image Gallery</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class=flashes>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <br />
+            {% endif %}
+        {% endwith %}
+        <div class="login"><a href="/login" class="button">Log In</a></div>
+        <h1>Image Gallery</h1>
+        <hr>
+        {% block body %}{% endblock %}
+        <style>
+            .button {
+                padding: 5px;
+                border: 1px solid black;
+                border-radius: 15px; 
+                margin: 10px;
+                color: black;
+                text-decoration: none;
+            }
+            .button:hover {
+                background-color: #ebebeb;
+            }
+            li {
+                margin-bottom: 15px;
+            }
+            .login {
+                float: right;
+            }
+            .login .button {
+                background-color: aquamarine;
+            }
+        </style>
+    </body>
