@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>New User</title>
-        <meta charset="utf-8" />
-    </head>
-    <body>
-        <h1>New User</h1>
+{% extends "layout.html" %}
+        {% block body %}
+        <h2>New User</h2>
         <form action="/admin/added" method="POST">
             <label for="full_name">Full Name</label>
             <input type="text" name="full_name" id="full_name" ><br/>
@@ -20,5 +15,4 @@
                 margin: 5px;
             }
         </style>
-    </body>
-</html>
+    {% endblock %}

@@ -35,16 +35,23 @@ def login():
     else:
         return render_template("login.html")
 
-
+def check_admin():
+    return 'username' in session and session['username'] == 'admin'
 
 @app.route("/admin")
 def admin_home():
+    if not check_admin():
+        error = 'You must be logged in as the admin to access this page';
+        return render_template('login.html', error=error)
     connect()
     users = user_dao().list_users()
     return render_template('admin_home.html', users=users)
 
 @app.route("/admin/modify/<username>")
 def modify_user(username):
+    if not check_admin():
+        error = 'You must be logged in as the admin to access this page';
+        return render_template('login.html', error=error)
     connect()
     user = user_dao().get_user(username)
     if user:
@@ -54,6 +61,9 @@ def modify_user(username):
 
 @app.route("/admin/modified", methods = ['POST'])
 def modified():
+    if not check_admin():
+        error = 'You must be logged in as the admin to access this page';
+        return render_template('login.html', error=error)
     connect()
     username = request.form['username'] 
     full_name = request.form['full_name'] if request.form['full_name'] else ""
@@ -63,20 +73,32 @@ def modified():
 
 @app.route("/admin/delete/<username>")
 def delete(username):
+    if not check_admin():
+        error = 'You must be logged in as the admin to access this page';
+        return render_template('login.html', error=error)
     return render_template('areyousure.html', username=username)
 
 @app.route("/admin/deleted/<username>")
 def deleted(username):
+    if not check_admin():
+        error = 'You must be logged in as the admin to access this page';
+        return render_template('login.html', error=error)
     connect()
     user_dao().delete_user(username)
     return username + " has been deleted.<br/><a href='/admin'>Return to Menu</a>"
 
 @app.route("/admin/addUser")
 def new_user_form():
+    if not check_admin():
+        error = 'You must be logged in as the admin to access this page';
+        return render_template('login.html', error=error)
     return render_template('add_form.html')
 
 @app.route("/admin/added", methods = ['POST'])
 def added():
+    if not check_admin():
+        error = 'You must be logged in as the admin to access this page';
+        return render_template('login.html', error=error)
     connect()
     username = request.form['username']
     full_name = request.form['full_name'] if request.form['full_name'] else ""
