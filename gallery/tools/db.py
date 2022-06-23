@@ -8,11 +8,14 @@ def get_secret():
     jsonString = get_secret_image_gallery()
     return json.loads(jsonString)
 
+def get_host():
+    return get_secret_host()
+
 def get_password(secret):
     return secret['password']
 
-def get_host(secret):
-    return secret['host']
+# def get_host(secret):
+#     return secret['host']
 
 def get_username(secret):
     return secret['username']

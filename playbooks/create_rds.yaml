@@ -5,37 +5,40 @@
       group/aws:
         region: us-east-1
     vars:
-      database_aws_secret: "{{ lookup('amazon.aws.aws_secret', 'image_gallery_password.password', nested=true) }}"
+      database_aws_secret: "{{ lookup('amazon.aws.aws_secret', 'image_gallery_db_root_password.password', nested=true) }}"
     tasks:
     - name: Create private subnet group
       community.aws.rds_subnet_group:
         state: present
-        name: Module5-private-group
+        name: module5-private-group
         description: Private subnets for database
         subnets:
           - "{{ private_subnet_1.subnet.id }}"
           - "{{ private_subnet_2.subnet.id }}"
         state: present
+      register: sng
+    - name: debug
+      debug: var=sng
     - name: Create Postgres database
       community.aws.rds_instance:
         engine: postgres
         db_instance_identifier: module-5-ig-postgres
         instance_type: db.t3.micro
         password: "{{ database_aws_secret }}"
-        username: image_gallery
+        username: postgres
         port: 5432
         vpc_security_group_ids:
           - "{{ postgres_sg.group_id }}"
-        db_subnet_group_name: Module5-private-group
+        db_subnet_group_name: module5-private-group
         availability_zone: us-east-1a
         allocated_storage: 15
         state: present
       register: pgdb
     - name: debug
       debug: var=pgdb
-    # - name:  Update db host to secrets manager
-    #   community.aws.aws_secret:
-    #     name: 'image_gallery_password.host'
-    #     state: present
-    #     secret_type: 'string'
-    #     secret: "{{ super_secret_string }}"
+    - name:  Create db host in secrets manager
+      community.aws.aws_secret:
+        name: 'm5host'
+        state: present
+        secret_type: 'string'
+        secret: "{{ pgdb.endpoint.address }}"
