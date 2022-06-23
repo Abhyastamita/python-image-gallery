@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>User Admin</title>
+        <title>Image Gallery</title>
         <meta charset="utf-8" />
     </head>
     <body>
-        <h1>User Admin Home</h1>
+        <h1>Image Gallery</h1>
         <hr>
-        <h2>Users</h2>
-        <ul id="users">
-            {% for user in users %}
-                <li><a href="admin/modify/{{ user.username }}">{{ user.full_name }}</a> <a class="button" href="admin/delete/{{ user.username }}">Delete</a></li>
-            {% endfor %}
+        <h2>Main Menu</h2>
+        <ul>
+            <li><a href="/uploadImage" class="button">Upload Image</a></li>
+            <li><a href="/viewImages" class="button">View Images</a></li>
+            <li><a href="/admin/users" class="button">User Admin</a></li>
         </ul>
-        <hr>
-        <br />
-        <a href="admin/addUser" class="button">Add User</a>
         <style>
             .button {
                 padding: 5px;
