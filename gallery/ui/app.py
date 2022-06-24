@@ -11,6 +11,7 @@ from gallery.data.user import User
 from gallery.data.postgres_user_dao import PostgresUserDAO
 from gallery.data.db import connect
 from gallery.tools.ig_secrets import get_session_secret
+from gallery.data.s3_tools import upload_image, download_images
 
 app = Flask(__name__)
 app.secret_key = get_session_secret()
@@ -70,10 +71,28 @@ def login():
     else:
         return render_template("login.html")
 
-@app.route("/uploadImage")
+@app.route("/uploadImage", methods=['GET', 'POST'])
 @requires_login
-def upload_image():
-    return
+def upload():
+    if request.method == 'POST':
+        content_type = request.mimetype
+        image_file = request.files['image']
+        owner = session['username']
+        response = upload_image(image_file, owner, content_type)
+        if response:
+            flash('Upload was successful')
+        else:
+            flash('Upload was unsuccessful')
+        return render_template("upload.html")
+    else:
+        return render_template("upload.html")
+
+@app.route("/viewImages")
+@requires_login
+def view_images():
+    images = download_images(session[username])
+    return render_template("view_images.html")
+
 
 @app.route("/viewImages")
 @requires_login
