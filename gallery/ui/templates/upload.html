@@ -3,9 +3,11 @@
         <h2>Upload an image</h2>
         <form action="/uploadImage" method="POST" enctype="multipart/form-data">
             <label for="full_name">Choose an image to upload</label>
-            <input type="file" id="image" name="image">
+            <input type="file" id="image" name="image" accept="image/png, image/jpeg">
             <input type="submit" value="Upload">
         </form>
+        <hr>
+        <a href="/viewImages">View your images</a>
         <style>
             input {
                 margin: 5px;

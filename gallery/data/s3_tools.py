@@ -31,3 +31,10 @@ def download_images(owner):
             obj = s3_client.download_file(Bucket=bucket, Key=img['Key'], Filename=path + img['Key'])
         filenames.append(img['Key'])
     return filenames
+
+def delete_image(filename):
+    bucket = 'auburn.image-gallery'
+    path = '/home/ec2-user/python-image-gallery/gallery/ui/static/img_cache/'
+    os.remove(path + filename)
+    response = s3_client.delete_object(Bucket=bucket, Key=filename)
+    return response

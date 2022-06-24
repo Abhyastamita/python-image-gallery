@@ -12,7 +12,7 @@ from gallery.data.user import User
 from gallery.data.postgres_user_dao import PostgresUserDAO
 from gallery.data.db import connect
 from gallery.tools.ig_secrets import get_session_secret
-from gallery.data.s3_tools import upload_image, download_images
+from gallery.data.s3_tools import upload_image, download_images, delete_image
 
 app = Flask(__name__)
 app.secret_key = get_session_secret()
@@ -55,7 +55,6 @@ def logout():
     session.pop('username', None)
     flash('You have been logged out')
     return redirect('/')
-    return
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -93,6 +92,17 @@ def upload():
 def images():
     images = download_images(session['username'])
     return render_template("view_images.html", files=images)
+
+@app.route("/deleteImage", methods=['POST'])
+@requires_login
+def delete_img():
+    image = request.form['filename']
+    deleted = delete_image(image)
+    if deleted:
+        flash("Image successfully deleted")
+    else:
+        flash("Unable to delete image")
+    return redirect('/viewImages')
 
 @app.route("/admin/users")
 @requires_admin
