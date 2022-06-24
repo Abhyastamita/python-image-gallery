@@ -93,6 +93,12 @@ def images():
     images = download_images(session['username'])
     return render_template("view_images.html", files=images)
 
+@app.route("/viewImage", methods=['GET'])
+@requires_login
+def image():
+    filename = request.args.get('filename')
+    return render_template("view_image.html", file=filename)
+
 @app.route("/deleteImage", methods=['POST'])
 @requires_login
 def delete_img():

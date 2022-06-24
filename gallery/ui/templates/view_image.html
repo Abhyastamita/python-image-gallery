@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+        {% block body %}
+        <img src="{{ url_for('static', filename='img_cache/' + file) }}" />
+        <form action="/deleteImage" method="POST">
+            <input type="hidden" name="filename" value="{{ file }}">
+            <input class="button delete" type="submit" value="Delete">
+        </form>
+        <hr>
+        <a href="/viewImages">Back to your images</a>
+        <style>
+            input {
+                margin: 5px;
+            }
+        </style>
+    {% endblock %}
