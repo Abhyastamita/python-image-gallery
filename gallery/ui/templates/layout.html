@@ -16,7 +16,11 @@
                 <br />
             {% endif %}
         {% endwith %}
-        <div class="login"><a href="/login" class="button">Log In</a></div>
+        {% if not check_logged_in() %}
+            <div class="login"><a href="/login" class="button">Log In</a></div>
+        {% else %}
+        <div class="logout"><a href="/logout" class="button">Log Out</a></div>
+        {% endif %}
         <h1><a href="/">Image Gallery</a></h1>
         <hr>
         {% block body %}{% endblock %}
@@ -35,11 +39,14 @@
             li {
                 margin-bottom: 15px;
             }
-            .login {
+            .login, .logout {
                 float: right;
             }
             .login .button {
                 background-color: aquamarine;
+            }
+            .logout .button {
+                background-color:burlywood;
             }
         </style>
     </body>
