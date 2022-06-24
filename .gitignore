@@ -1,4 +1,4 @@
-gallery/img_cache/*
+gallery/ui/static/img_cache/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

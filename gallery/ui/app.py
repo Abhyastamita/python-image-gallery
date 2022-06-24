@@ -4,6 +4,7 @@ from flask import request
 from flask import redirect
 from flask import session
 from flask import flash
+from flask import url_for
 
 from functools import wraps
 
@@ -89,15 +90,9 @@ def upload():
 
 @app.route("/viewImages")
 @requires_login
-def view_images():
-    images = download_images(session[username])
-    return render_template("view_images.html")
-
-
-@app.route("/viewImages")
-@requires_login
-def view_images():
-    return
+def images():
+    images = download_images(session['username'])
+    return render_template("view_images.html", files=images)
 
 @app.route("/admin/users")
 @requires_admin

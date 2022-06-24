@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+        {% block body %}
+        <h2>View Your Images</h2>
+        <ul id="images">
+            {% for file in files %}
+                <li><a href="{{ url_for('static', filename='img_cache/' + file) }}"><img class="gallery" src="{{ url_for('static', filename='img_cache/' + file) }}" align="middle" /></a></li>
+            {% endfor %}
+        </ul>
+    {% endblock %}

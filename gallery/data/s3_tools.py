@@ -22,9 +22,12 @@ def upload_image(file, owner, mime):
 def download_images(owner):
     bucket = 'auburn.image-gallery'
     images = s3_client.list_objects_v2(Bucket=bucket, Prefix=owner)
-    path = '/home/ec2-user/python-image-gallery/img_cache/'
+    path = '/home/ec2-user/python-image-gallery/gallery/ui/static/img_cache/'
     if not os.path.exists(os.path.dirname(path + owner + "/")):
         os.makedirs(os.path.dirname(path + owner + "/"))
+    filenames = []
     for img in images['Contents']:
         if not  os.path.isfile(path + img['Key']):
             obj = s3_client.download_file(Bucket=bucket, Key=img['Key'], Filename=path + img['Key'])
+        filenames.append(img['Key'])
+    return filenames
