@@ -1,5 +1,5 @@
 import psycopg2
-from db import *
+from gallery.tools.db import *
 
 
 

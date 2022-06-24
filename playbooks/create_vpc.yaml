@@ -129,5 +129,54 @@
                 - 443
               cidr_ip:  68.119.93.72/32
               rule_desc: allow web traffic for grader and instructor
+            - proto: tcp
+              ports:
+                - 80
+              cidr_ip:  54.158.135.234/32
+              rule_desc: allow traffic to load balancer
           state: present
-        register: nginx_sg
+        register: nginx_sg 
+      - name: Create public ACL
+        community.aws.ec2_vpc_nacl:
+          vpc_id: vpc-12345678
+          name: module5-public-acl
+          region: us-east-1
+          subnets: ["{{ public_subnet.subnet.id }}"]
+          tags:
+            Name: Module5 public acl
+            Module: 5
+          ingress:
+              # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code,
+              #                                             port from, port to
+              - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+              - [101, 'tcp', 'allow', '73.251.112.244/32', null, null, 80, 80]
+              - [102, 'tcp', 'allow', '24.239.105.213/32', null, null, 80, 80]
+              - [103, 'tcp', 'allow', '68.119.93.72/32', null, null, 80, 80]
+              - [104, 'tcp', 'allow', '54.158.135.234/32', null, null, 80, 80]
+              - [105, 'tcp', 'allow', '73.251.112.244/32', null, null, 443, 443]
+              - [106, 'tcp', 'allow', '24.239.105.213/32', null, null, 443, 443]
+              - [107, 'tcp', 'allow', '68.119.93.72/32', null, null, 443, 443]
+              - [108, 'tcp', 'allow', '73.251.112.244/32', null, null, 5000, 5000]
+              - [900, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]
+          egress:
+              - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+              - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]
+              - [300, 'tcp', 'allow', '73.251.112.244/32', null, null, 5000, 5000]
+              - [900, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]
+          state: 'present'
+      - name: Create private ACL
+        community.aws.ec2_vpc_nacl:
+          vpc_id: vpc-12345678
+          name: module5-private-acl
+          region: us-east-1
+          subnets: ["{{ private_subnet_1.subnet.id }}", "{{ private_subnet_2.subnet.id }}"]
+          tags:
+            Name: Module5 private acl
+            Module: 5
+          ingress:
+              # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code,
+              #                                             port from, port to
+              - [100, 'tcp', 'allow', '10.10.0.0/16', null, null, 5432, 5432]
+          egress:
+              - [900, 'tcp', 'allow', '10.10.0.0/16', null, null, 1024, 65535]
+          state: 'present'

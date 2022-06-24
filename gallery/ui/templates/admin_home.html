@@ -1,36 +1,14 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>User Admin</title>
-        <meta charset="utf-8" />
-    </head>
-    <body>
-        <h1>User Admin Home</h1>
+{% extends "layout.html" %}
+        {% block body %}
+        <h2>User Admin Home</h2>
         <hr>
-        <h2>Users</h2>
+        <h3>Users</h3>
         <ul id="users">
             {% for user in users %}
-                <li><a href="admin/modify/{{ user[0] }}">{{ user[2] }}</a> <a class="button" href="admin/delete/{{ user[0] }}">Delete</a></li>
+                <li><a href="admin/users/modify/{{ user.username }}">{{ user.full_name }}</a> <a class="button" href="admin/users/delete/{{ user.username }}">Delete</a></li>
             {% endfor %}
         </ul>
         <hr>
         <br />
-        <a href="admin/addUser" class="button">Add User</a>
-        <style>
-            .button {
-                padding: 5px;
-                border: 1px solid black;
-                border-radius: 15px; 
-                margin: 10px;
-                color: black;
-                text-decoration: none;
-            }
-            .button:hover {
-                background-color: #ebebeb;
-            }
-            li {
-                margin-bottom: 15px;
-            }
-        </style>
-    </body>
-</html>
+        <a href="admin/users/addUser" class="button">Add User</a>
+        {% endblock %}
