@@ -138,7 +138,7 @@
             - proto: tcp
               ports:
                 - 80
-              cidr_ip:  54.158.135.234/32
+              cidr_ip:  10.10.0.0/16
               rule_desc: allow traffic to load balancer
           state: present
         register: nginx_sg
@@ -168,7 +168,7 @@
               - [101, 'tcp', 'allow', '73.251.112.244/32', null, null, 80, 80]
               - [102, 'tcp', 'allow', '24.239.105.213/32', null, null, 80, 80]
               - [103, 'tcp', 'allow', '68.119.93.72/32', null, null, 80, 80]
-              - [104, 'tcp', 'allow', '54.158.135.234/32', null, null, 80, 80]
+              - [104, 'tcp', 'allow', '10.10.0.0/16', null, null, 80, 80]
               - [105, 'tcp', 'allow', '73.251.112.244/32', null, null, 443, 443]
               - [106, 'tcp', 'allow', '24.239.105.213/32', null, null, 443, 443]
               - [107, 'tcp', 'allow', '68.119.93.72/32', null, null, 443, 443]

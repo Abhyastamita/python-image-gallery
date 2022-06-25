@@ -9,7 +9,6 @@
     tasks:
     - name: Create private subnet group
       community.aws.rds_subnet_group:
-        state: present
         name: module5-private-group
         description: Private subnets for database
         subnets:
