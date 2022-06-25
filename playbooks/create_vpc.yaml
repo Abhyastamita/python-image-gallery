@@ -63,6 +63,7 @@
             - dest: 0.0.0.0/0
               gateway_id: "{{ igw.gateway_id }}"
           state: present
+        register: rt
       - name: Create developer security group
         ec2_group:
           name: Module5-developer-sg
@@ -74,6 +75,11 @@
                 - 22
               cidr_ip: 0.0.0.0/0
               rule_desc: allow all to port twenty two
+            - proto: tcp
+              ports:
+                - 5000
+              cidr_ip: 73.251.112.244/32
+              rule_desc: allow my home IP to 5000 for Flask development
           state: present
         register: developer_sg
       - name: Create postgres-tag security group
@@ -91,7 +97,7 @@
           state: present
         register: postgres_tag_sg
       - name: debug
-        debug: var=public_subnet
+        debug: var=rt
       - name: Create postgres security group
         ec2_group:
           name: Module5-postgres
@@ -135,16 +141,26 @@
               cidr_ip:  54.158.135.234/32
               rule_desc: allow traffic to load balancer
           state: present
-        register: nginx_sg 
+        register: nginx_sg
+      - name: Create secrets security group
+        ec2_group:
+          name: Module5-secrets
+          description: secrets security group
+          vpc_id: "{{ vpc.vpc.id }}"
+          rules:
+            - proto: tcp
+              ports:
+                - 443
+              cidr_ip:  10.10.0.0/16
+              rule_desc: allow 443 within VPC
+          state: present
+        register: secrets_sg
       - name: Create public ACL
         community.aws.ec2_vpc_nacl:
-          vpc_id: vpc-12345678
+          vpc_id: "{{ vpc.vpc.id }}"
           name: module5-public-acl
           region: us-east-1
           subnets: ["{{ public_subnet.subnet.id }}"]
-          tags:
-            Name: Module5 public acl
-            Module: 5
           ingress:
               # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code,
               #                                             port from, port to
@@ -156,23 +172,22 @@
               - [105, 'tcp', 'allow', '73.251.112.244/32', null, null, 443, 443]
               - [106, 'tcp', 'allow', '24.239.105.213/32', null, null, 443, 443]
               - [107, 'tcp', 'allow', '68.119.93.72/32', null, null, 443, 443]
+              - [109, 'tcp', 'allow', '54.158.135.234/32', null, null, 443, 443]
               - [108, 'tcp', 'allow', '73.251.112.244/32', null, null, 5000, 5000]
               - [900, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]
           egress:
               - [100, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
               - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]
               - [300, 'tcp', 'allow', '73.251.112.244/32', null, null, 5000, 5000]
+              - [400, 'tcp', 'allow', '0.0.0.0/0', null, null, 443, 443]
               - [900, 'tcp', 'allow', '0.0.0.0/0', null, null, 1024, 65535]
           state: 'present'
       - name: Create private ACL
         community.aws.ec2_vpc_nacl:
-          vpc_id: vpc-12345678
+          vpc_id: "{{ vpc.vpc.id }}"
           name: module5-private-acl
           region: us-east-1
           subnets: ["{{ private_subnet_1.subnet.id }}", "{{ private_subnet_2.subnet.id }}"]
-          tags:
-            Name: Module5 private acl
-            Module: 5
           ingress:
               # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code,
               #                                             port from, port to
@@ -180,3 +195,29 @@
           egress:
               - [900, 'tcp', 'allow', '10.10.0.0/16', null, null, 1024, 65535]
           state: 'present'
+      - name: Create new vpc endpoint for secrets
+        amazon.aws.ec2_vpc_endpoint:
+          state: present
+          region: us-east-1
+          vpc_id: "{{ vpc.vpc.id }}"
+          vpc_endpoint_type: Interface
+          vpc_endpoint_subnets: "{{ public_subnet.subnet.id }}"
+          vpc_endpoint_security_groups:
+            - "{{ secrets_sg.group_id }}"
+          service: com.amazonaws.us-east-1.secretsmanager
+          # route_table_ids:
+          #   - "{{ rt.route_table.id }}"
+        register: new_vpc_endpoint
+      - name: Create new vpc endpoint for s3
+        amazon.aws.ec2_vpc_endpoint:
+          state: present
+          region: us-east-1
+          vpc_id: "{{ vpc.vpc.id }}"
+          vpc_endpoint_type: Interface
+          vpc_endpoint_subnets: "{{ public_subnet.subnet.id }}"
+          vpc_endpoint_security_groups:
+            - "{{ secrets_sg.group_id }}"
+          service: com.amazonaws.us-east-1.s3
+          # route_table_ids:
+          #   - "{{ rt.route_table.id }}"
+        register: new_vpc_endpoint

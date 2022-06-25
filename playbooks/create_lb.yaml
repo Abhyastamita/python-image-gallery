@@ -19,8 +19,6 @@
           # health_check_timeout: 10
           # healthy_threshold_count: 3
           # unhealthy_threshold_count: 3
-          tags:
-            Name: "Module 5 Target Group"
           state: present
         register: tg
       - name: Create load balancer
@@ -48,3 +46,8 @@
         debug: var=tg
       - name: debug
         debug: var=lb
+      - name: Terminate existing targets because target group always deregisters old ones
+        amazon.aws.ec2_instance:
+          state: absent
+          filters:
+            "tag:Name": module5nginx

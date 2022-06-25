@@ -26,10 +26,11 @@ def download_images(owner):
     if not os.path.exists(os.path.dirname(path + owner + "/")):
         os.makedirs(os.path.dirname(path + owner + "/"))
     filenames = []
-    for img in images['Contents']:
-        if not  os.path.isfile(path + img['Key']):
-            obj = s3_client.download_file(Bucket=bucket, Key=img['Key'], Filename=path + img['Key'])
-        filenames.append(img['Key'])
+    if 'Contents' in images:
+        for img in images['Contents']:
+            if not  os.path.isfile(path + img['Key']):
+                obj = s3_client.download_file(Bucket=bucket, Key=img['Key'], Filename=path + img['Key'])
+            filenames.append(img['Key'])
     return filenames
 
 def delete_image(filename):

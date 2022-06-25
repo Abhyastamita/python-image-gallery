@@ -2,6 +2,9 @@
         {% block body %}
         <h2>View Your Images</h2>
         <ul id="images">
+            {% if not file%}
+                <a href="/viewImages">Upload some images</a>
+            {% endif %}
             {% for file in files %}
                 <li><a href="viewImage?filename={{ file }}"><img class="gallery" src="{{ url_for('static', filename='img_cache/' + file) }}" /></a>
                     <form action="/deleteImage" method="POST">
