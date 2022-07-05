@@ -22,7 +22,7 @@ def upload_image(file, owner, mime):
 def download_images(owner):
     bucket = 'auburn.image-gallery'
     images = s3_client.list_objects_v2(Bucket=bucket, Prefix=owner)
-    path = '/home/ec2-user/python-image-gallery/gallery/ui/static/img_cache/'
+    path = '~/python-image-gallery/gallery/ui/static/img_cache/'
     if not os.path.exists(os.path.dirname(path + owner + "/")):
         os.makedirs(os.path.dirname(path + owner + "/"))
     filenames = []
@@ -35,7 +35,7 @@ def download_images(owner):
 
 def delete_image(filename):
     bucket = 'auburn.image-gallery'
-    path = '/home/ec2-user/python-image-gallery/gallery/ui/static/img_cache/'
+    path = '~/python-image-gallery/gallery/ui/static/img_cache/'
     os.remove(path + filename)
     response = s3_client.delete_object(Bucket=bucket, Key=filename)
     return response
