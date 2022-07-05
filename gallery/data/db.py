@@ -8,14 +8,15 @@ def get_secret():
     jsonString = get_secret_image_gallery()
     return json.loads(jsonString)
 
-def get_host():
-    return get_secret_host()
+# uncomment to use Ansible VPC
+# def get_host():
+#     return get_secret_host()
 
 def get_password(secret):
     return secret['password']
 
-# def get_host(secret):
-#     return secret['host']
+def get_host(secret):
+    return secret['host']
 
 def get_username(secret):
     return secret['username']
@@ -26,7 +27,7 @@ def get_db_name(secret):
 def connect():
     global connection
     secret = get_secret()
-    connection = psycopg2.connect(host=get_host(), dbname=dbname, user=get_username(secret), password=get_password(secret))
+    connection = psycopg2.connect(host=get_host(secret), dbname=dbname, user=get_username(secret), password=get_password(secret))
 
 def execute(query,args=None):
     global connection
