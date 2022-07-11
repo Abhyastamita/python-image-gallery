@@ -1,32 +1,30 @@
 import psycopg2
-from gallery.tools.ig_secrets import get_secret_image_gallery, get_secret_host
 import json
+import os
 
 dbname = 'image_gallery'
 
-def get_secret():
-    jsonString = get_secret_image_gallery()
-    return json.loads(jsonString)
-
 def get_host():
-    return get_secret_host()
+    return os.getenv("PG_HOST")
 
-def get_password(secret):
-    return secret['password']
+def get_port():
+    return os.getenv("PG_PORT")
 
-# def get_host(secret):
-#     return secret['host']
+def get_password():
+    pwfile = open(os.getenv("IG_PASSWD_FILE"), "r") 
+    pw = pwfile.readline()
+    pwfile.close()
+    return pw[:-1]
 
-def get_username(secret):
-    return secret['username']
+def get_username():
+    return os.getenv("IG_USER")
 
-def get_db_name(secret):
-    return secret['dbInstanceIdentifier']
+def get_db_name():
+    return os.getenv("IG_DATABASE")
 
 def connect():
     global connection
-    secret = get_secret()
-    connection = psycopg2.connect(host=get_host(), dbname=dbname, user=get_username(secret), password=get_password(secret))
+    connection = psycopg2.connect(host=get_host(), port=get_port(), dbname=get_db_name(), user=get_username(), password=get_password())
 
 def execute(query,args=None):
     global connection

@@ -8,14 +8,15 @@ from flask import url_for
 
 from functools import wraps
 
+import os
+
 from gallery.data.user import User
 from gallery.data.postgres_user_dao import PostgresUserDAO
 from gallery.data.db import connect
-from gallery.tools.ig_secrets import get_session_secret
 from gallery.data.s3_tools import upload_image, download_images, delete_image
 
 app = Flask(__name__)
-app.secret_key = get_session_secret()
+app.secret_key = os.getenv("FLASK_SESSION_SECRET")
 
 def user_dao():
     return PostgresUserDAO()

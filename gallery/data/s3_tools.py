@@ -6,11 +6,11 @@ import uuid
 import os
 
 s3_client = boto3.client('s3')
+bucket = os.getenv("S3_IMAGE_BUCKET")
 
 def upload_image(file, owner, mime):
     img_id = str(uuid.uuid4())
     data = file
-    bucket = 'auburn.image-gallery'
     # name = secure_filename(file)
     try:
         response = s3_client.put_object(Key=owner + "/" + img_id, Body=data, Bucket=bucket, ContentType=mime) # Metadata={'title': name})
@@ -20,9 +20,8 @@ def upload_image(file, owner, mime):
     return True
 
 def download_images(owner):
-    bucket = 'auburn.image-gallery'
     images = s3_client.list_objects_v2(Bucket=bucket, Prefix=owner)
-    path = '/home/ec2-user/python-image-gallery/gallery/ui/static/img_cache/'
+    path = 'gallery/ui/static/img_cache/'
     if not os.path.exists(os.path.dirname(path + owner + "/")):
         os.makedirs(os.path.dirname(path + owner + "/"))
     filenames = []
@@ -34,8 +33,7 @@ def download_images(owner):
     return filenames
 
 def delete_image(filename):
-    bucket = 'auburn.image-gallery'
-    path = '/home/ec2-user/python-image-gallery/gallery/ui/static/img_cache/'
+    path = 'gallery/ui/static/img_cache/'
     os.remove(path + filename)
     response = s3_client.delete_object(Bucket=bucket, Key=filename)
     return response
