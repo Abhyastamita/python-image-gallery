@@ -9,6 +9,7 @@ from flask import url_for
 from functools import wraps
 
 import os
+import base64
 
 from gallery.data.user import User
 from gallery.data.postgres_user_dao import PostgresUserDAO
@@ -46,6 +47,12 @@ def requires_login(view):
             return render_template('login.html', error=error)
         return view(**kwargs)
     return decorated
+
+@app.template_global()
+def encode_image(filename):
+    with open(filename, "rb") as img_file:
+        b64_string = base64.b64encode(img_file.read())
+    return b64_string.decode('utf-8)')
 
 @app.route("/")
 def  main_menu():

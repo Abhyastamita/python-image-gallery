@@ -5,7 +5,19 @@ from werkzeug.utils import secure_filename
 import uuid
 import os
 
-s3_client = boto3.client('s3')
+def get_access_key_id():
+    idfile = open(os.getenv("AWS_ACCESS_KEY_ID_FILE"), "r") 
+    id = idfile.readline()
+    idfile.close()
+    return id[:-1]
+
+def get_access_key_secret():
+    secretfile = open(os.getenv("AWS_SECRET_ACCESS_KEY_FILE"), "r") 
+    secret = secretfile.readline()
+    secretfile.close()
+    return secret[:-1]
+
+s3_client = boto3.client('s3', aws_access_key_id=get_access_key_id(), aws_secret_access_key=get_access_key_secret())
 bucket = os.getenv("S3_IMAGE_BUCKET")
 
 def upload_image(file, owner, mime):

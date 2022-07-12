@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
         {% block body %}
-        <img src="{{ url_for('static', filename='img_cache/' + file) }}" />
+        <img src="data:image/jpeg;charset=utf-8;base64,{{ encode_image('/home/image_gallery/python-image-gallery/gallery/ui/static/img_cache/' + file) }}" />
         <form action="/deleteImage" method="POST">
             <input type="hidden" name="filename" value="{{ file }}">
             <input class="button delete" type="submit" value="Delete">
